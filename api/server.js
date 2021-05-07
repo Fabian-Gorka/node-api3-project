@@ -10,16 +10,16 @@ server.use('/api/users', userRouter);
 
 // global middlewares and the user's router need to be connected here
 
-server.get('/', (req, res) => {
-  res.send(`<h2>Let's write some middleware!</h2>`);
+server.get('/', async (req, res) => {
+  try {
+    const shoutouts = await db('shoutouts');
+    const messageOfTheDay = process.env.MOTD || 'Hello World!'; // add this line
+    res.status(200).json({ motd: messageOfTheDay, shoutouts }); // change this line
+  } catch (error) {
+    console.error('\nERROR', error);
+    res.status(500).json({ error: 'Cannot retrieve the shoutouts' });
+  }
 });
-server.use((err, req, res, next) => {
-  res.status(500).json({
-    message: err.message,
-    stack: err.stack,
-    custom: 'not sure what went wrong, but you done goofed.'
-  })
-})
 
 
 
